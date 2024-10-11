@@ -3,10 +3,12 @@ import ReminderCard from './components/ReminderCard'; // Une carte de rappel
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {API_URL} from "./config";
+import AddTreatmentForm from './components/AddTreatmentForm';
 
 
 function App() {
     const [treatments, setTreatments] = useState([]); // Stocker les traitements
+    const [showAddForm, setShowAddForm] = useState(false); // Contrôle du formulaire d'ajout
 
     // Appeler l'API lorsque le composant est monté
     useEffect(() => {
@@ -20,12 +22,19 @@ function App() {
         };
 
         fetchData();
-    }, []);
+    }, [API_URL]);
 
     const handleDelete = (id) => {
         setTreatments((prevTreatments) =>
             prevTreatments.filter((treatment) => treatment.id !== id)
         );
+    };
+
+    // Fonction pour ajouter un traitement dans l'état après ajout réussi
+    const handleAddTreatment = (newTreatment) => {
+        setTreatments([...treatments, newTreatment]);
+        setShowAddForm(false); // Masquer le formulaire après l'ajout
+
     };
 
     return (
@@ -43,10 +52,18 @@ function App() {
                 {/* Section Rappels */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Rappels</h2>
-                    <button className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center">
+                    <button
+                        onClick={() => setShowAddForm(!showAddForm)} // Afficher ou masquer le formulaire
+                        className="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center"
+                    >
                         +
                     </button>
                 </div>
+
+                {/* Formulaire d'ajout */}
+                {showAddForm && (
+                    <AddTreatmentForm API_URL={API_URL} onAdd={handleAddTreatment} />
+                )}
 
                 {/* List de cartes de rappels */}
                 {/* Liste des rappels */}
